@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.isp.mapper.IspEsbServiceMapper">
+
+    <resultMap type="com.xinba.isp.entity.TboxChangeRecord" id="TboxChangeRecordMap">
+        <result property="vin" column="vin" jdbcType="VARCHAR"/>
+        <result property="newiccid" column="newiccid" jdbcType="VARCHAR"/>
+        <result property="oldiccid" column="oldiccid" jdbcType="VARCHAR"/>
+        <result property="imsi" column="imsi" jdbcType="VARCHAR"/>
+        <result property="msisdn" column="msisdn" jdbcType="VARCHAR"/>
+        <result property="imei" column="imei" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <insert id="insertTboxChangeRecord">
+        insert into shop_admin.tbox_change_record(vin, newiccid, oldiccid, imsi, msisdn, imei)
+        values (#{vin},#{newiccid},#{oldiccid},#{imsi},#{msisdn},#{imei})
+    </insert>
+
+    <update id="updateIccidVin">
+        update shop_admin.iccid_vin
+        set
+        iccid=#{newiccid}
+        where vin=#{vin}
+    </update>
+
+</mapper>

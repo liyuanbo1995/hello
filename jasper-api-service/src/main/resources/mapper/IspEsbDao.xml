@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.isp.mapper.IspEsbServiceMapper">
+
+    <insert id="insertActiveOrUnbindRecord">
+        insert into shop_admin.sim_active_unbind(iccid, create_time,status, operation_people)
+        values (#{iccid},NOW(),#{status},#{operationPeople})
+    </insert>
+
+    <select id="getActiveRecord" resultType="INTEGER">
+        select count(*) from shop_admin.sim_active_unbind where iccid=#{iccid}
+    </select>
+
+    <delete id="deleteIccidVinByIccid">
+        delete from shop_admin.iccid_vin
+        where iccid=#{iccid}
+
+    </delete>
+    <delete id="deletePerAuthByIccid">
+        delete from shop_admin.personal_authentication
+        where iccid=#{iccid}
+    </delete>
+
+</mapper>

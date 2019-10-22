@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.isp.mapper.VerifiedMapper">
+
+    <resultMap type="com.xinba.isp.entity.form.RequestData" id="RequestDataMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="vin" column="vin" jdbcType="VARCHAR"/>
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="imsi" column="imsi" jdbcType="VARCHAR"/>
+        <result property="msisdn" column="msisdn" jdbcType="VARCHAR"/>
+        <result property="imei" column="imei" jdbcType="VARCHAR"/>
+        <result property="deviceID" column="deviceID" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="ownercerttype" column="ownercerttype" jdbcType="VARCHAR"/>
+        <result property="ownercertid" column="ownercertid" jdbcType="VARCHAR"/>
+        <result property="ownercertaddr" column="ownercertaddr" jdbcType="VARCHAR"/>
+        <result property="pic1" column="pic1" jdbcType="VARCHAR"/>
+        <result property="pic2" column="pic2" jdbcType="VARCHAR"/>
+        <result property="facepic" column="facepic" jdbcType="VARCHAR"/>
+        <result property="servnumber" column="servnumber" jdbcType="VARCHAR"/>
+        <result property="ownercontact" column="ownercontact" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="brandid" column="brandid" jdbcType="VARCHAR"/>
+        <result property="lineNameEn" column="lineNameEn" jdbcType="VARCHAR"/>
+        <result property="channelId" column="channelId" jdbcType="VARCHAR"/>
+        <result property="requestTime" column="request_time" jdbcType="TIMESTAMP"/>
+        <result property="responseTime" column="response_time" jdbcType="TIMESTAMP"/>
+        <result property="auditresult" column="auditresult" jdbcType="INTEGER"/>
+        <result property="auditdesc" column="auditdesc" jdbcType="VARCHAR"/>
+        <result property="auditcomment" column="auditcomment" jdbcType="VARCHAR"/>
+        <result property="step" column="step" jdbcType="INTEGER"/>
+        <result property="retMsg" column="ret_msg" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryPersonalInfo" resultMap="RequestDataMap">
+        select
+          id, vin, iccid, imsi, msisdn, imei, deviceID, username, gender, ownercerttype, ownercertid, ownercertaddr, pic1, pic2, facepic, servnumber, ownercontact, email, brandid, lineNameEn, channelId,step,ret_msg, request_time, response_time,auditresult,auditdesc,auditcomment
+        from shop_admin.personal_authentication
+        <where>
+            <if test="vin != null and vin != ''">
+                and vin = #{vin}
+            </if>
+            <if test="iccid != null and iccid != ''">
+                and iccid = #{iccid}
+            </if>
+            <if test="msisdn != null and msisdn != ''">
+                and msisdn = #{msisdn}
+            </if>
+            <if test="auditresult!=null and auditresult!=''">
+                and auditresult=#{auditresult}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertPersonalInfo">
+        insert into shop_admin.personal_authentication(vin, iccid, imsi, msisdn, imei, deviceID, username, gender, ownercerttype, ownercertid, ownercertaddr, pic1, pic2, facepic,servnumber, ownercontact, email, brandid, lineNameEn, channelId,step)
+        values (#{vin}, #{iccid}, #{imsi}, #{msisdn}, #{imei}, #{deviceID}, #{username}, #{gender}, #{ownercerttype}, #{ownercertid}, #{ownercertaddr}, #{pic1}, #{pic2},#{facepic}, #{servnumber}, #{ownercontact}, #{email}, #{brandid}, #{lineNameEn}, #{channelId},#{step})
+    </insert>
+
+    <update id="updatePersonalInfo">
+        update shop_admin.personal_authentication
+        <set>
+            <if test="vin != null and vin != ''">
+                vin = #{vin},
+            </if>
+            <if test="iccid != null and iccid != ''">
+                iccid = #{iccid},
+            </if>
+            <if test="imsi != null and imsi != ''">
+                imsi = #{imsi},
+            </if>
+            <if test="msisdn != null and msisdn != ''">
+                msisdn = #{msisdn},
+            </if>
+            <if test="imei != null and imei != ''">
+                imei = #{imei},
+            </if>
+            <if test="deviceID != null and deviceID != ''">
+                deviceID = #{deviceID},
+            </if>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+            <if test="ownercerttype != null and ownercerttype != ''">
+                ownercerttype = #{ownercerttype},
+            </if>
+            <if test="ownercertid != null and ownercertid != ''">
+                ownercertid = #{ownercertid},
+            </if>
+            <if test="ownercertaddr != null and ownercertaddr != ''">
+                ownercertaddr = #{ownercertaddr},
+            </if>
+            <if test="pic1 != null and pic1 != ''">
+                pic1 = #{pic1},
+            </if>
+            <if test="pic2 != null and pic2 != ''">
+                pic2 = #{pic2},
+            </if>
+            <if test="facepic != null and facepic != ''">
+                facepic = #{facepic},
+            </if>
+            <if test="servnumber != null and servnumber != ''">
+                servnumber = #{servnumber},
+            </if>
+            <if test="ownercontact != null and ownercontact != ''">
+                ownercontact = #{ownercontact},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="brandid != null and brandid != ''">
+                brandid = #{brandid},
+            </if>
+            <if test="lineNameEn != null and lineNameEn != ''">
+                lineNameEn = #{lineNameEn},
+            </if>
+            <if test="channelId != null and channelId != ''">
+                channelId = #{channelId},
+            </if>
+            <if test="step != null and step != ''">
+                step = #{step}
+            </if>
+        </set>
+        where iccid=#{iccid}
+    </update>
+
+    <update id="updateAuditResult">
+        update shop_admin.personal_authentication
+        set
+        auditresult=#{auditresult},
+        auditdesc=#{auditdesc},
+        auditcomment=#{auditcomment}
+        where iccid=#{iccid}
+    </update>
+
+    <select id="getSubmitInfo" resultMap="RequestDataMap">
+        select
+        vin, iccid, imsi, msisdn, imei, deviceID, username, gender, ownercerttype, ownercertid, ownercertaddr, pic1, pic2, facepic, servnumber, ownercontact, email, brandid, lineNameEn, channelId
+        from shop_admin.personal_authentication
+        <where>
+        <if test="vin != null and vin != ''">
+            and vin = #{vin}
+        </if>
+        <if test="iccid != null and iccid != ''">
+            and iccid = #{iccid}
+        </if>
+        </where>
+    </select>
+
+    <update id="updateRetMsg">
+        update shop_admin.personal_authentication
+        <set>
+            <if test="retMsg!=null and retMsg!=''">
+                ret_msg=#{retMsg},
+            </if>
+            <if test="auditresult!=null">
+                auditresult=#{auditresult}
+            </if>
+        </set>
+        where iccid=#{iccid}
+    </update>
+
+    <insert id="insertIccidVin">
+        replace into shop_admin.iccid_vin(iccid, vin, phone, order_time)
+        values (#{iccid},#{vin},#{phone},NOW())
+    </insert>
+
+    <update id="updateIccidVinStatus">
+        update shop_admin.iccid_vin
+        set
+        status=#{auditresult}
+        where iccid=#{iccid}
+    </update>
+
+</mapper>

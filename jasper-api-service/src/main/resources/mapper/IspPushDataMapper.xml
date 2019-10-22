@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.isp.mapper.IspPushDataMapper">
+
+    <resultMap type="com.xinba.isp.entity.IspPushData" id="IspPushDataMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="accountName" column="account_name" jdbcType="VARCHAR"/>
+        <result property="zoneName" column="zone_name" jdbcType="VARCHAR"/>
+        <result property="ratePlanName" column="rate_plan_name" jdbcType="VARCHAR"/>
+        <result property="totalIncludedZoneUsage" column="total_included_zone_usage" jdbcType="NUMERIC"/>
+        <result property="totalActualZoneUsage" column="total_actual_zone_usage" jdbcType="NUMERIC"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="queryPoolData" resultMap="IspPushDataMap">
+        select
+          id, account_name, zone_name, rate_plan_name, total_included_zone_usage, total_actual_zone_usage, update_time
+        from shop_admin.isp_pool_data
+        <where>
+
+        <if test="search != null and search != ''">
+            and account_name like concat("%",#{search},"%") or zone_name like concat("%",#{search},"%") or rate_plan_name like concat("%",#{search},"%")
+        </if>
+        <if test="isLast != null and isLast != ''">
+            and last_data = 1
+        </if>
+        <if test="zoneName != null and zoneName != ''">
+            and zone_name = #{zoneName}
+        </if>
+        <if test="accountName !=null and accountName != ''">
+            and account_name = #{accountName}
+        </if>
+        <if test="ratePlanName !=null and ratePlanName != ''">
+            and rate_plan_name = #{ratePlanName}
+        </if>
+        </where>
+        order by update_time desc,zone_name asc
+    </select>
+
+
+    <select id="queryPoolGroup" resultType="com.xinba.isp.entity.form.PoolGroup">
+        select
+         ${column} as poolKey
+        from shop_admin.isp_pool_data
+        group by ${column}
+    </select>
+
+    <insert id="insertPoolData">
+        insert into shop_admin.isp_pool_data(account_name, zone_name, rate_plan_name, total_included_zone_usage, total_actual_zone_usage,event_id,event_type,signature,signature2,timestamp,update_time)
+        values (#{accountName}, #{zoneName}, #{ratePlanName}, #{totalIncludedZoneUsage}, #{totalActualZoneUsage},#{eventId},#{eventType},#{signature},#{signature2},#{timestamp},NOW())
+    </insert>
+
+    <update id="updateLastIspPoolData">
+        update shop_admin.isp_pool_data set last_data = 0 where zone_name = #{zoneName} and rate_plan_name = #{ratePlanName}
+    </update>
+
+    <update id="updateCtdUsage">
+        update shop_admin.sim_info
+        set ctdDataUsage=#{dataUsage}
+        where iccid=#{iccid}
+    </update>
+
+    <update id="updateCtdZUsage">
+        update shop_admin.sim_info
+        set
+        ctdZUsage=#{dataUsage},
+        zoneName=#{zoneName}
+        where iccid=#{iccid}
+    </update>
+    <update id="updateSimFieldChange">
+        update shop_admin.sim_info
+        <set>
+            <if test='fieldName=="CUSTOM1"'>
+                account_custom_1=#{newValue},
+            </if>
+            <if test='fieldName=="CUSTOM2"'>
+                account_custom_2=#{newValue},
+            </if>
+            <if test='fieldName=="CUSTOM3"'>
+                ctdVoiceUsage=#{newValue},
+            </if>
+        </set>
+        where iccid=#{iccid}
+    </update>
+
+    <update id="updateSimStateChange">
+        update shop_admin.sim_info
+        set status=#{currentState},
+        update_time=#{dateChanged}
+        where iccid=#{iccid}
+    </update>
+
+
+</mapper>

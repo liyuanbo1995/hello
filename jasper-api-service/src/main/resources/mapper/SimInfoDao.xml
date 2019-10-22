@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.isp.mapper.IspPushDataMapper">
+
+    <resultMap type="com.xinba.isp.entity.SimInfo" id="SimInfoMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="imsi" column="imsi" jdbcType="VARCHAR"/>
+        <result property="msisdn" column="msisdn" jdbcType="VARCHAR"/>
+        <result property="imei" column="imei" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="ratePlan" column="rate_plan" jdbcType="VARCHAR"/>
+        <result property="communicationPlan" column="communication_plan" jdbcType="VARCHAR"/>
+        <result property="customer" column="customer" jdbcType="VARCHAR"/>
+        <result property="endCustomerId" column="end_customer_id" jdbcType="VARCHAR"/>
+        <result property="dateActivated" column="date_activated" jdbcType="TIMESTAMP"/>
+        <result property="dateUpdated" column="date_updated" jdbcType="TIMESTAMP"/>
+        <result property="dateAdded" column="date_added" jdbcType="TIMESTAMP"/>
+        <result property="dateShipped" column="date_shipped" jdbcType="TIMESTAMP"/>
+        <result property="accountId" column="account_id" jdbcType="VARCHAR"/>
+        <result property="fixedIpAddress" column="fixed_ip_address" jdbcType="VARCHAR"/>
+        <result property="firmId" column="firm_id" jdbcType="INTEGER"/>
+        <result property="firmTypeId" column="firm_type_id" jdbcType="INTEGER"/>
+        <result property="typeProductId" column="type_product_id" jdbcType="INTEGER"/>
+        <result property="operationCustom1" column="operation_custom_1" jdbcType="VARCHAR"/>
+        <result property="operationCustom2" column="operation_custom_2" jdbcType="VARCHAR"/>
+        <result property="operationCustom3" column="operation_custom_3" jdbcType="VARCHAR"/>
+        <result property="operationCustom4" column="operation_custom_4" jdbcType="VARCHAR"/>
+        <result property="operationCustom5" column="operation_custom_5" jdbcType="VARCHAR"/>
+        <result property="accountCustom1" column="account_custom_1" jdbcType="VARCHAR"/>
+        <result property="accountCustom2" column="account_custom_2" jdbcType="VARCHAR"/>
+        <result property="accountCustom3" column="account_custom_3" jdbcType="VARCHAR"/>
+        <result property="accountCustom4" column="account_custom_4" jdbcType="VARCHAR"/>
+        <result property="accountCustom5" column="account_custom_5" jdbcType="VARCHAR"/>
+        <result property="accountCustom6" column="account_custom_6" jdbcType="VARCHAR"/>
+        <result property="accountCustom7" column="account_custom_7" jdbcType="VARCHAR"/>
+        <result property="accountCustom8" column="account_custom_8" jdbcType="VARCHAR"/>
+        <result property="accountCustom9" column="account_custom_9" jdbcType="VARCHAR"/>
+        <result property="accountCustom10" column="account_custom_10" jdbcType="VARCHAR"/>
+        <result property="customerCustom1" column="customer_custom_1" jdbcType="VARCHAR"/>
+        <result property="customerCustom2" column="customer_custom_2" jdbcType="VARCHAR"/>
+        <result property="customerCustom3" column="customer_custom_3" jdbcType="VARCHAR"/>
+        <result property="customerCustom4" column="customer_custom_4" jdbcType="VARCHAR"/>
+        <result property="customerCustom5" column="customer_custom_5" jdbcType="VARCHAR"/>
+        <result property="simNotes" column="sim_notes" jdbcType="VARCHAR"/>
+        <result property="deviceId" column="device_id" jdbcType="VARCHAR"/>
+        <result property="modemId" column="modem_id" jdbcType="VARCHAR"/>
+        <result property="euIccid" column="eu_iccid" jdbcType="VARCHAR"/>
+        <result property="globalSimType" column="global_sim_type" jdbcType="VARCHAR"/>
+        <result property="synNum" column="syn_num" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="ctdDataUsage" column="ctdDataUsage" jdbcType="VARCHAR"/>
+        <result property="ctdSMSUsage" column="ctdSMSUsage" jdbcType="VARCHAR"/>
+        <result property="ctdVoiceUsage" column="ctdVoiceUsage" jdbcType="VARCHAR"/>
+        <result property="ctdSessionCount" column="ctdSessionCount" jdbcType="VARCHAR"/>
+        <result property="overageLimitReached" column="overageLimitReached" jdbcType="VARCHAR"/>
+        <result property="overageLimitOverride" column="overageLimitOverride" jdbcType="VARCHAR"/>
+        <result property="ctdZUsage" column="ctdZUsage" jdbcType="VARCHAR"/>
+        <result property="zoneName" column="zoneName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="ExpireDateMap" type="com.xinba.isp.entity.charts.ExpireDateForm">
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="vin" column="vin" jdbcType="VARCHAR"/>
+        <result property="expireDate" column="account_custom_2" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询所有iccid-->
+    <select id="queryAllIccid" resultType="String">
+        select iccid from shop_admin.sim_info
+    </select>
+
+    <select id="getSimInfoByIccid" resultMap="SimInfoMap">
+        select
+        id,imsi, msisdn, imei, status, rate_plan, communication_plan, customer, end_customer_id, date_activated, date_updated, date_added, date_shipped, account_id, fixed_ip_address, firm_id, firm_type_id, type_product_id, operation_custom_1, operation_custom_2, operation_custom_3, operation_custom_4, operation_custom_5, account_custom_1, account_custom_2, account_custom_3, account_custom_4, account_custom_5, account_custom_6, account_custom_7, account_custom_8, account_custom_9, account_custom_10, customer_custom_1, customer_custom_2, customer_custom_3, customer_custom_4, customer_custom_5, sim_notes, device_id, modem_id, eu_iccid, global_sim_type, syn_num, update_time,ctdDataUsage,ctdSMSUsage,ctdVoiceUsage,ctdSessionCount,overageLimitReached,overageLimitOverride,ctdZUsage,zoneName
+        from shop_admin.sim_info
+        where iccid=#{iccid}
+    </select>
+
+
+
+    <!--通过主键修改数据-->
+    <update id="updateSimInfo">
+        update shop_admin.sim_info
+        <set>
+            <if test="imsi != null and imsi != ''">
+                imsi = #{imsi},
+            </if>
+            <if test="msisdn != null and msisdn != ''">
+                msisdn = #{msisdn},
+            </if>
+            <if test="imei != null and imei != ''">
+                imei = #{imei},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="ratePlan != null and ratePlan != ''">
+                rate_plan = #{ratePlan},
+            </if>
+            <if test="communicationPlan != null and communicationPlan != ''">
+                communication_plan = #{communicationPlan},
+            </if>
+            <if test="customer != null and customer != ''">
+                customer = #{customer},
+            </if>
+            <if test="endCustomerId != null and endCustomerId != ''">
+                end_customer_id = #{endCustomerId},
+            </if>
+            <if test="dateActivated != null">
+                date_activated = #{dateActivated},
+            </if>
+            <if test="dateUpdated != null">
+                date_updated = #{dateUpdated},
+            </if>
+            <if test="dateAdded != null">
+                date_added = #{dateAdded},
+            </if>
+            <if test="dateShipped != null">
+                date_shipped = #{dateShipped},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id = #{accountId},
+            </if>
+            <if test="fixedIpAddress != null and fixedIpAddress != ''">
+                fixed_ip_address = #{fixedIpAddress},
+            </if>
+            <if test="firmId != null">
+                firm_id = #{firmId},
+            </if>
+            <if test="firmTypeId != null">
+                firm_type_id = #{firmTypeId},
+            </if>
+            <if test="typeProductId != null">
+                type_product_id = #{typeProductId},
+            </if>
+            <if test="operationCustom1 != null and operationCustom1 != ''">
+                operation_custom_1 = #{operationCustom1},
+            </if>
+            <if test="operationCustom2 != null and operationCustom2 != ''">
+                operation_custom_2 = #{operationCustom2},
+            </if>
+            <if test="operationCustom3 != null and operationCustom3 != ''">
+                operation_custom_3 = #{operationCustom3},
+            </if>
+            <if test="operationCustom4 != null and operationCustom4 != ''">
+                operation_custom_4 = #{operationCustom4},
+            </if>
+            <if test="operationCustom5 != null and operationCustom5 != ''">
+                operation_custom_5 = #{operationCustom5},
+            </if>
+            <if test="accountCustom1 != null and accountCustom1 != ''">
+                account_custom_1 = #{accountCustom1},
+            </if>
+            <if test="accountCustom2 != null and accountCustom2 != ''">
+                account_custom_2 = #{accountCustom2},
+            </if>
+            <if test="accountCustom3 != null and accountCustom3 != ''">
+                account_custom_3 = #{accountCustom3},
+            </if>
+            <if test="accountCustom4 != null and accountCustom4 != ''">
+                account_custom_4 = #{accountCustom4},
+            </if>
+            <if test="accountCustom5 != null and accountCustom5 != ''">
+                account_custom_5 = #{accountCustom5},
+            </if>
+            <if test="accountCustom6 != null and accountCustom6 != ''">
+                account_custom_6 = #{accountCustom6},
+            </if>
+            <if test="accountCustom7 != null and accountCustom7 != ''">
+                account_custom_7 = #{accountCustom7},
+            </if>
+            <if test="accountCustom8 != null and accountCustom8 != ''">
+                account_custom_8 = #{accountCustom8},
+            </if>
+            <if test="accountCustom9 != null and accountCustom9 != ''">
+                account_custom_9 = #{accountCustom9},
+            </if>
+            <if test="accountCustom10 != null and accountCustom10 != ''">
+                account_custom_10 = #{accountCustom10},
+            </if>
+            <if test="customerCustom1 != null and customerCustom1 != ''">
+                customer_custom_1 = #{customerCustom1},
+            </if>
+            <if test="customerCustom2 != null and customerCustom2 != ''">
+                customer_custom_2 = #{customerCustom2},
+            </if>
+            <if test="customerCustom3 != null and customerCustom3 != ''">
+                customer_custom_3 = #{customerCustom3},
+            </if>
+            <if test="customerCustom4 != null and customerCustom4 != ''">
+                customer_custom_4 = #{customerCustom4},
+            </if>
+            <if test="customerCustom5 != null and customerCustom5 != ''">
+                customer_custom_5 = #{customerCustom5},
+            </if>
+            <if test="simNotes != null and simNotes != ''">
+                sim_notes = #{simNotes},
+            </if>
+            <if test="deviceId != null and deviceId != ''">
+                device_id = #{deviceId},
+            </if>
+            <if test="modemId != null and modemId != ''">
+                modem_id = #{modemId},
+            </if>
+            <if test="euIccid != null and euIccid != ''">
+                eu_iccid = #{euIccid},
+            </if>
+            <if test="globalSimType != null and globalSimType != ''">
+                global_sim_type = #{globalSimType},
+            </if>
+            <if test="synNum != null">
+                syn_num = #{synNum},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="ctdDataUsage != null and ctdDataUsage != ''">
+                ctdDataUsage = #{ctdDataUsage},
+            </if>
+            <if test="ctdSMSUsage != null and ctdSMSUsage != ''">
+                ctdSMSUsage = #{ctdSMSUsage},
+            </if>
+            <if test="ctdVoiceUsage != null and ctdVoiceUsage != ''">
+                ctdVoiceUsage = #{ctdVoiceUsage},
+            </if>
+            <if test="ctdSessionCount != null and ctdSessionCount != ''">
+                ctdSessionCount = #{ctdSessionCount},
+            </if>
+            <if test="overageLimitReached != null and overageLimitReached != ''">
+                overageLimitReached = #{overageLimitReached},
+            </if>
+            <if test="overageLimitOverride != null and overageLimitOverride != ''">
+                overageLimitOverride = #{overageLimitOverride},
+            </if>
+            <if test="ctdZUsage != null and ctdZUsage != ''">
+                ctdZUsage = #{ctdZUsage},
+            </if>
+            <if test="zoneName != null and zoneName != ''">
+                zoneName = #{zoneName},
+            </if>
+        </set>
+        where iccid = #{iccid}
+    </update>
+
+    <select id="selectSimInfo" resultMap="SimInfoMap">
+        select o.* ,INSERT(p.phone,4,4,'****')as phone,p.vin from shop_admin.sim_info o left join iccid_vin p on o.iccid=p.iccid
+        where o.iccid=#{iccid}
+    </select>
+
+    <select id="queryExpireSim" resultMap="ExpireDateMap">
+        select o.iccid,o.account_custom_2,p.vin from sim_info o left join iccid_vin p on o.iccid=p.iccid
+        where left(account_custom_2,6)=date_format(NOW(),'%Y%m')
+    </select>
+
+
+</mapper>

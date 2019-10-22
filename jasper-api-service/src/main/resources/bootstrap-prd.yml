@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: isp-api-service
+  redis:
+    host: 39.98.164.160
+    port: 6379
+    password: bishisimo
+    database: 1
+    lettuce:
+      pool:
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
+      timeout: 1
+    cache:
+      type: redis
+      cache-names: jcCache
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.205.220:3306/shop_admin?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 600000
+      maximum-pool-size: 10
+      auto-commit: true
+      pool-name: MyHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.205.220:8848
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+server:
+  port: 8083
+  servlet:
+    context-path: /isp
+
+mybatis:
+  configuration:
+    cache-enabled: true
+  type-aliases-package: com.xinba.isp
+  mapper-locations: classpath:mapper/*.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  config: classpath:log/logging-config.xml
+
+  # 配置pagehelper参数
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+
+feign:
+  sentinel:
+    enabled: true
+
+jasper:
+  key: songlingling
+  password: 312d848d-f0f8-4e53-bdff-db3354191723
+  url: https://api.10646.cn/rws/api/v1/
+  url2: https://testrnr.cu-sc.com/esb/json

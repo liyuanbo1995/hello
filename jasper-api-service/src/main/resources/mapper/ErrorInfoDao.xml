@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.isp.mapper.IspPushDataMapper">
+
+    <resultMap type="com.xinba.isp.entity.ErrorInfo" id="ErrorInfoMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="errorCode" column="error_code" jdbcType="VARCHAR"/>
+        <result property="errorDate" column="error_date" jdbcType="TIMESTAMP"/>
+        <result property="errorStatus" column="error_status" jdbcType="INTEGER"/>
+        <result property="errorMessage" column="error_message" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="getFailSynSim" resultMap="ErrorInfoMap">
+        select id, iccid, error_code, error_date, error_status, error_message
+        from shop_admin.error_info where error_status = 0
+    </select>
+
+    <select id="getAllFailSimIccid" resultType="String">
+        select iccid from shop_admin.error_info
+        where error_status=0
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertErrorInfo" keyProperty="id" useGeneratedKeys="true">
+        insert into shop_admin.error_info(iccid, error_code, error_message)
+        values (#{iccid}, #{errorCode}, #{errorMessage})
+    </insert>
+
+    <update id="updateSimErrorStatus">
+        update shop_admin.error_info
+        set
+        error_status=1
+        where iccid=#{iccid}
+    </update>
+
+    <update id="updateSimError">
+        update shop_admin.error_info
+        set
+        error_code=#{errorCode},
+        error_message=#{errorMessage}
+        where iccid=#{iccid}
+    </update>
+
+
+</mapper>
