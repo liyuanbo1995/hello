@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.GcMapper">
+
+    <resultMap type="com.xinba.flow.entity.GcFirm" id="GcFirmMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="info" column="info" jdbcType="VARCHAR"/>
+        <result property="productNum" column="product_num" jdbcType="INTEGER"/>
+        <result property="contact" column="contact" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.flow.entity.GcFirmType" id="GcFirmProductTypeMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="firmId" column="firm_id" jdbcType="INTEGER"/>
+        <result property="info" column="info" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.flow.entity.GcFirmProduct" id="GcFrimProductMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="typeId" column="type_id" jdbcType="INTEGER"/>
+        <result property="typeName" column="type_name" jdbcType="VARCHAR"/>
+        <result property="info" column="info" jdbcType="VARCHAR"/>
+        <result property="listTime" column="list_time" jdbcType="OTHER"/>
+    </resultMap>
+
+    <!--查询产品类型下的产品系列-->
+    <select id="selectProduct" resultMap="GcFrimProductMap">
+        select * from shop_admin.gc_firm_product
+        where type_id=#{typeId}
+        <if test="productName!=null and productName!=''">
+            and name like concat(concat('%',#{productName},'%'))
+        </if>
+    </select>
+
+    <insert id="addFirmProduct">
+        insert into shop_admin.gc_firm_product(name, type_id, type_name, info, list_time)
+        values (#{name},#{typeId},#{typeName},#{info},#{listTime})
+    </insert>
+
+    <!--查询客户公司下所有产品类型-->
+    <select id="selectProductType" resultMap="GcFirmProductTypeMap">
+        select
+          id, name, firm_id,firm_name,info
+        from shop_admin.gc_firm_product_type
+        where firm_id = #{firmId}
+        <if test="typeName!=null and typeName!=''">
+            and name like concat(concat('%',#{typeName},'%'))
+        </if>
+    </select>
+
+    <insert id="addFirmType">
+        insert into shop_admin.gc_firm_product_type(name, firm_id,firm_name, info)
+        values (#{name},#{firmId},#{firmName},#{info})
+    </insert>
+
+    <!--查询所有客户公司-->
+    <select id="selectFirm" resultMap="GcFirmMap">
+        select
+          id, name, info, contact, email, phone, address
+        from shop_admin.gc_firm where 1=1
+        <if test="firmName!=null and firmName!=''">
+            and name like concat(concat('%',#{firmName},'%'))
+        </if>
+    </select>
+    <insert id="addFrimInfo">
+        insert into shop_admin.gc_firm(name,info,contact,email,phone,address)
+        values (#{name},#{info},#{contact},#{email},#{phone},#{address})
+    </insert>
+
+    <update id="addContactPhone">
+        update shop_admin.gc_firm
+        set
+        contact= (SELECT a.contact from
+        (select
+           CASE
+			WHEN contact is null
+			THEN
+				#{contact}
+			WHEN contact=''
+			THEN
+				#{contact}
+			else
+			concat(contact,'_',#{contact})
+			END as contact
+			from shop_admin.gc_firm where id=#{id}) as a),
+
+        phone=(SELECT b.phone FROM
+        (select CASE
+			WHEN phone is null
+			THEN
+				#{phone}
+			WHEN phone =''
+			THEN
+				#{phone}
+			ELSE
+			concat(phone,'_',#{phone})
+			END as phone
+			from shop_admin.gc_firm where id=#{id})as b)
+        where id=#{id}
+    </update>
+
+    <select id="getFirmInfo" resultMap="GcFirmMap">
+        select  name, info, contact, email, phone, address from gc_firm
+        where id=#{firmId}
+    </select>
+    <select id="getTypeInfo" resultMap="GcFirmProductTypeMap">
+        select  name, firm_id, firm_name, info from gc_firm_product_type
+        where id=#{typeId}
+    </select>
+    <select id="getProductInfo" resultMap="GcFrimProductMap">
+        select name, type_id, type_name, info, list_time from gc_firm_product
+        where id=#{productId}
+    </select>
+
+</mapper>

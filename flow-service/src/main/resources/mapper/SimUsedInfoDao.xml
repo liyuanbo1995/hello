@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.SimUsedInfoMapper">
+
+    <resultMap type="com.xinba.flow.entity.SimUsedInfo" id="SimUsedInfoMap">
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="ratePlan" column="rate_plan" jdbcType="INTEGER"/>
+        <result property="ctdDataUsage" column="ctd_data_usage" jdbcType="NUMERIC"/>
+        <result property="overRageLimitReached" column="over_rage_limit_reached" jdbcType="OTHER"/>
+    </resultMap>
+
+    <!--绑定套餐-->
+    <insert id="bindPack">
+        insert into shop_admin.sim_used_info(iccid,rate_plan)
+        values (#{iccid},#{ratePlan})
+    </insert>
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.VinCarMapper">
+
+    <resultMap type="com.xinba.flow.entity.TboxChangeRecord" id="TboxChangeRecordMap">
+        <result property="vin" column="vin" jdbcType="VARCHAR"/>
+        <result property="newiccid" column="newiccid" jdbcType="VARCHAR"/>
+        <result property="oldiccid" column="oldiccid" jdbcType="VARCHAR"/>
+        <result property="imsi" column="imsi" jdbcType="VARCHAR"/>
+        <result property="msisdn" column="msisdn" jdbcType="VARCHAR"/>
+        <result property="imei" column="imei" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getTboxChangeRecord" resultMap="TboxChangeRecordMap">
+        select id,vin,newiccid,oldiccid,imsi,msisdn,imei,change_time from tbox_change_record
+        where 1=1
+        <if test="vin != null and vin!=''">
+            and vin = #{vin}
+        </if>
+    </select>
+
+</mapper>

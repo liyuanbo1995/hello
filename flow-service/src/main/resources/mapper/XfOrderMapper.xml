@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.XfOrderMapper">
+
+    <resultMap type="com.xinba.flow.entity.XfOrder" id="XfOrderMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="simId" column="sim_id" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="amount" column="amount" jdbcType="NUMERIC"/>
+        <result property="count" column="count" jdbcType="INTEGER"/>
+        <result property="carName" column="car_name" jdbcType="VARCHAR"/>
+        <result property="innerCarName" column="inner_car_name" jdbcType="VARCHAR"/>
+        <result property="standard" column="standard" jdbcType="INTEGER"/>
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="totalPrice" column="total_price" jdbcType="NUMERIC"/>
+        <result property="orderStatus" column="order_status" jdbcType="VARCHAR"/>
+        <result property="payMethod" column="pay_method" jdbcType="VARCHAR"/>
+        <result property="payStatus" column="pay_status" jdbcType="VARCHAR"/>
+        <result property="logisticsStatus" column="logistics_status" jdbcType="VARCHAR"/>
+        <result property="salesReturnStatus" column="sales_return_status" jdbcType="VARCHAR"/>
+        <result property="invoiceStatus" column="invoice_status" jdbcType="VARCHAR"/>
+        <result property="orderTimeExpired" column="order_time_expired" jdbcType="NUMERIC"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="orderTime" column="order_time" jdbcType="VARCHAR"/>
+        <result property="userIccid" column="user_iccid" jdbcType="VARCHAR"/>
+        <result property="vinCode" column="vin_code" jdbcType="VARCHAR"/>
+        <result property="month" column="month" jdbcType="INTEGER"/>
+        <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
+        <collection property="products" resultMap="ProductsMap"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.flow.entity.XfOrderDetails" id="ProductsMap">
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="Id" column="_id" jdbcType="VARCHAR"/>
+        <result property="firmPackId" column="firm_pack_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="amount" column="damount" jdbcType="NUMERIC"/>
+        <result property="desc" column="desc_info" jdbcType="VARCHAR"/>
+        <result property="standard" column="standard" jdbcType="INTEGER"/>
+        <result property="time" column="time" jdbcType="TIMESTAMP"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="typeName" column="type_name" jdbcType="VARCHAR"/>
+        <result property="cycle" column="cycle" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="XfOrderMap">
+        select
+          id,sim_id, status, amount, count, create_time
+        from shop_admin.xf_order
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="XfOrderMap">
+        select
+          id, sim_id, status, amount, count, create_time
+        from shop_admin.xf_order
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryListBySeach" resultMap="XfOrderMap">
+        select
+          o.id,
+          o.amount,
+          o.count,
+          o.create_time,
+          o.car_name
+        from shop_admin.xf_order o
+        where 1=1
+        <if test="searchStr">
+            and o.order_id = #{orderId}
+        </if>
+        <if test="payStatus">
+            and o.pay_status = #{payStatus}
+        </if>
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryDetailListBySeach" resultMap="XfOrderMap">
+        SELECT
+            DATE_FORMAT( oc.create_time, "%Y-%m-%d" ) AS order_time,
+            sum( oc.standard ) AS standard
+        FROM
+            (
+            SELECT
+                o.create_time AS create_time,
+            CASE
+			WHEN d.type = 1
+			AND d.cycle = '3个月' THEN
+				d.standard
+			WHEN d.type = 1
+			AND d.cycle = '6个月' THEN
+				d.standard
+			WHEN d.type = 1
+			AND d.cycle = '12个月' THEN
+				d.standard
+			WHEN d.type = 2 THEN
+				d.standard
+			WHEN d.type = 3 THEN
+				0 ELSE 0
+			END AS standard
+			FROM
+				shop_admin.xf_order_details d
+				JOIN shop_admin.xf_order o ON d.order_id = o.order_id
+				AND o.pay_status = '已支付'
+				) oc
+			GROUP BY
+			DATE_FORMAT( oc.create_time, "%Y-%m-%d" )
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="allsim" resultType="com.xinba.flow.entity.charts.SimCharts">
+        select ca.date_actived as openTime, ca.simCount as simCount
+        from
+          (select DATE_FORMAT( date_actived , "%Y-%m-%d" ) as date_actived,count(*) as simCount from shop_admin.sim_info group by DATE_FORMAT( date_actived , "%Y-%m-%d" )) ca
+        ORDER BY ca.date_actived ASC
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="findAllsim" resultType="com.xinba.flow.entity.charts.SimCharts">
+      select count(d.iccid) as simCount, DATE_FORMAT(d.date_activated  , "%Y-%m-%d" ) as openTime
+      from shop_admin.sim_info d
+      group by DATE_FORMAT(d.date_activated  , "%Y-%m-%d" )
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="totalSim" resultType="com.xinba.flow.entity.charts.TotalCount">
+      select
+        COUNT(o.iccid) as totalSim
+        from shop_admin.sim_info o
+    </select>
+
+    <!--查询数据-->
+    <select id="queryTransTable" resultMap="XfOrderMap">
+        select
+        o.id,
+        o.amount,
+        o.count,
+        o.create_time,
+        o.car_name,
+        o.pay_method,
+        o.pay_status,
+        o.invoice_status,
+        o.order_id,
+        o.user_iccid
+        from shop_admin.xf_order o
+        where o.pay_status='已支付'
+        order by o.create_time DESC limit 10;
+    </select>
+
+    <select id="totalCount" resultType="com.xinba.flow.entity.charts.TotalCount">
+        select
+        SUM(o.amount) as totalAmount,
+        SUM(d.standard) as totalStandard,
+        COUNT(o.order_id) as totalOrder
+        from shop_admin.xf_order o
+        left join shop_admin.xf_order_details d
+        on o.order_id = d.order_id
+        where o.pay_status = '已支付'
+    </select>
+
+    <select id="queryTypeCharts" resultType="com.xinba.flow.entity.charts.TypeCharts">
+        select DATE_FORMAT( od.create_time , "%Y%u" ) weeks, count(od.order_id) amount from
+        (SELECT
+            DISTINCT o.order_id , o.amount, o.count, o.create_time, d.type
+        FROM
+            shop_admin.xf_order o,
+            shop_admin.xf_order_details d
+        WHERE
+            d.order_id = o.order_id
+            AND o.pay_status = '已支付'
+            AND d.type = #{type}
+            ORDER BY o.create_time asc) od
+        GROUP BY weeks
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryYearOrder" resultMap="XfOrderMap">
+        select
+        o.id,
+        o.amount,
+        o.count,
+        DATE_FORMAT( o.create_time , "%m" ) as month,
+        o.car_name,
+        o.inner_car_name
+        from shop_admin.xf_order o
+        where DATE_FORMAT( o.create_time , "%Y" ) = DATE_FORMAT(NOW(), "%Y" ) and o.pay_status = '已支付'
+    </select>
+
+    <select id="chartOrderCount" resultType="com.xinba.flow.entity.charts.OrderCount">
+        SELECT DATE_FORMAT( s.create_time, "%Y-%m-%d" ) as orderDate, COUNT( * ) as count ,sum( s.amount ) as amount from shop_admin.xf_order s where s.pay_status='已支付'
+        GROUP BY DATE_FORMAT( s.create_time , "%Y-%m-%d" )
+    </select>
+
+    <select id="chartCar" resultType="com.xinba.flow.entity.charts.ChartsCar">
+        select SUM( amount ) as value, inner_car_name as name from shop_admin.xf_order WHERE car_name <![CDATA[<>]]> '' and pay_status = '已支付'
+        group by inner_car_name ORDER BY NAME DESC
+    </select>
+
+    <select id="getAllFirmProduct" resultType="com.xinba.flow.entity.GcFirmProduct">
+        select * from shop_admin.gc_firm_product order by id asc
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="XfOrderMap">
+        select
+          id,sim_id, status, amount, count, create_time
+        from shop_admin.xf_order
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="simId != null and simId != ''">
+                and sim_id = #{simId}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into shop_admin.xf_order(  sim_id, status, amount, count, create_time)
+        values (#{simId}, #{status}, #{amount}, #{count}, #{createTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update shop_admin.xf_order
+        <set>
+            <if test="firmPackId != null">
+                firm_pack_id = #{firmPackId},
+            </if>
+            <if test="simId != null and simId != ''">
+                sim_id = #{simId},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from shop_admin.xf_order where id = #{id}
+    </delete>
+
+    <!--插入订单-->
+    <insert id="insertOrder" parameterType="com.xinba.flow.entity.XfOrder" useGeneratedKeys="true" keyProperty="id">
+        insert  into shop_admin.xf_order(order_id, amount,car_name,inner_car_name, order_status, pay_method, pay_status, logistics_status, sales_return_status, invoice_status, order_time_expired, create_time,user_iccid,vin_code,pay_time)
+        values (#{orderId},#{amount},#{carName},#{innerCarName},#{orderStatus},#{payMethod},#{payStatus},#{logisticsStatus},#{salesReturnStatus},#{invoiceStatus},#{orderTimeExpired},#{createTime},#{userIccid},#{vinCode},#{payTime})
+    </insert>
+
+    <insert id="insertProducts" parameterType="com.xinba.flow.entity.XfOrderDetails">
+        insert into shop_admin.xf_order_details(order_id, _id, content,name, price, desc_info, company, type, type_name, amount, cycle)
+        values (#{orderId},#{Id},#{content},#{name},#{price},#{desc},#{company},#{type},#{typeName},#{amount},#{cycle})
+    </insert>
+
+    <select id="selectOrderInfo" resultMap="XfOrderMap">
+        select
+        o.id,
+        o.amount,
+        o.count,
+        o.car_name,
+        o.order_id,
+        o.order_status,
+        o.pay_method,
+        o.pay_status,
+        o.logistics_status,
+        o.sales_return_status,
+        o.invoice_status,
+        o.order_time_expired,
+        o.create_time,
+        o.user_iccid,
+        o.vin_code,
+        o.pay_time,
+        d.*,
+        o.amount as damount
+        from shop_admin.xf_order o,shop_admin.xf_order_details d
+        where o.order_id=d.order_id
+
+        <if test="orderId!=null and orderId!=''">
+         and o.order_id like concat(concat('%',#{orderId},'%'))
+        </if>
+        <if test="beginTime!=null and beginTime!=''">
+           and DATE(o.create_time) &gt;= DATE_FORMAT(#{beginTime},'%Y-%m-%d')
+        </if>
+        <if test="endTime!=null and endTime!=''">
+         and DATE(o.create_time) &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+        </if>
+        <if test="payStatus!=null and payStatus!=''">
+        and o.pay_status =#{payStatus}
+        </if>
+        <if test="payMethod!=null and payMethod!=''">
+            and o.pay_method=#{payMethod}
+        </if>
+        <if test="userIccid!=null and userIccid!=''">
+            and o.user_iccid like concat(concat('%',#{userIccid},'%'))
+        </if>
+        <if test="company!=null and company!=''">
+            and d.company=#{company}
+        </if>
+        <if test="typeName!=null and typeName!=''">
+            and d.type=#{typeName}
+        </if>
+    </select>
+
+    <select id="countOrder" resultMap="XfOrderMap">
+        select count(*) from shop_admin.xf_order
+        <if test="orderId!=null and orderId!=''">
+            where order_id like concat(concat('%',#{orderId},'%'))
+        </if>
+    </select>
+
+    <select id="totalAmount" resultType="Double">
+        select sum(o.amount)
+        from shop_admin.xf_order o
+        left join shop_admin.xf_order_details d
+        on o.order_id=d.order_id
+        where 1=1
+        <if test="orderId!=null and orderId!=''">
+        and o.order_id like concat(concat('%',#{orderId},'%'))
+            and o.order_id like concat(concat('%',#{orderId},'%'))
+        </if>
+        <if test="beginTime!=null and beginTime!=''">
+            and DATE(o.create_time) &gt;= DATE_FORMAT(#{beginTime},'%Y-%m-%d')
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and DATE(o.create_time) &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+        </if>
+        <if test="payStatus!=null and payStatus!=''">
+            and o.pay_status =#{payStatus}
+        </if>
+        <if test="payMethod!=null and payMethod!=''">
+            and o.pay_method=#{payMethod}
+        </if>
+        <if test="userIccid!=null and userIccid!=''">
+            and o.user_iccid like concat(concat('%',#{userIccid},'%'))
+        </if>
+        <if test="company!=null and company!=''">
+            and d.company=#{company}
+        </if>
+        <if test="typeName!=null and typeName!=''">
+            and d.type=#{typeName}
+        </if>
+    </select>
+
+    <!--修改订单信息-->
+    <update id="updateOrderInfo">
+        update shop_admin.xf_order
+        <set>
+        <if test="carName!=null and carName!=''">
+            car_name=#{carName},
+        </if>
+        <if test="orderStatus!=null and orderStatus!=''">
+            order_status=#{orderStatus},
+        </if>
+        <if test="payMethod!=null and payMethod!=''">
+            pay_method=#{payMethod},
+        </if>
+        <if test="payStatus!=null and payStatus!=''">
+            pay_status=#{payStatus},
+        </if>
+        <if test="logisticsStatus!=null and logisticsStatus!=''">
+            logistics_status=#{logisticsStatus},
+        </if>
+        <if test="salesReturnStatus!=null and salesReturnStatus!=''">
+            sales_return_status=#{salesReturnStatus},
+        </if>
+        <if test="invoiceStatus!=null and invoiceStatus!=''">
+            invoice_status=#{invoiceStatus},
+        </if>
+        <if test="orderTimeExpired!=null">
+            order_time_expired=#{orderTimeExpired},
+        </if>
+        <if test="payTime!=null">
+            pay_time=#{payTime, jdbcType=TIMESTAMP},
+        </if>
+        </set>
+        where order_id=#{orderId}
+    </update>
+
+</mapper>

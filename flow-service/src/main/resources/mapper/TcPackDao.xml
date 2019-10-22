@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.OperationFlowMapper">
+
+    <resultMap type="com.xinba.flow.entity.TcPack" id="TcPackMap">
+        <result property="packId" column="pack_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="cost" column="cost" jdbcType="NUMERIC"/>
+        <result property="cycle" column="cycle" jdbcType="INTEGER"/>
+        <result property="strCycle" column="str_cycle" jdbcType="VARCHAR"/>
+        <result property="standard" column="standard" jdbcType="INTEGER"/>
+        <result property="strStandard" column="str_standard" jdbcType="VARCHAR"/>
+        <result property="tcType" column="tc_type" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="operationType" column="operation_type" jdbcType="INTEGER"/>
+        <result property="descInfo" column="desc_info" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="addPack" useGeneratedKeys="true" keyProperty="packId">
+        insert into shop_admin.tc_pack(name, cost, cycle,str_cycle, standard,str_standard, type,content,operation_type,desc_info)
+        values (#{name},#{cost},#{cycle},#{strCycle},#{standard},#{strStandard},#{type},#{content},#{operationType},#{descInfo})
+
+    </insert>
+
+    <select id="getPack" resultMap="TcPackMap">
+        select pack_id,name,cost,cycle,str_cycle,standard,str_standard,tc_type,type,content,operation_type,desc_info from shop_admin.tc_pack
+        where status=1
+        <if test="name!=null and name!=''">
+            and  name like concat(concat('%',#{name},'%'))
+        </if>
+        <if test="cycle!=null and cycle!=''">
+            and cycle=#{cycle}
+        </if>
+    </select>
+    <select id="getPackById" resultMap="TcPackMap">
+        select * from shop_admin.tc_pack
+        where pack_id=#{packId} and status=1
+    </select>
+
+    <update id="deletePack">
+        update shop_admin.tc_pack
+        set
+        status=0
+        where pack_id=#{packId}
+    </update>
+
+</mapper>

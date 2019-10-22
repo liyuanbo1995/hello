@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.VinCarMapper">
+
+    <resultMap type="com.xinba.flow.entity.IccidVin" id="IccidVinMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="vin" column="vin" jdbcType="VARCHAR"/>
+        <result property="orderTime" column="order_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <collection property="personalInfo" resultMap="PersonalAuthenticationMap"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.flow.entity.PersonalAuthentication" id="PersonalAuthenticationMap">
+        <result property="imsi" column="imsi" jdbcType="VARCHAR"/>
+        <result property="msisdn" column="msisdn" jdbcType="VARCHAR"/>
+        <result property="imei" column="imei" jdbcType="VARCHAR"/>
+        <result property="deviceid" column="deviceID" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="ownercerttype" column="ownercerttype" jdbcType="VARCHAR"/>
+        <result property="ownercertid" column="ownercertid" jdbcType="VARCHAR"/>
+        <result property="ownercertaddr" column="ownercertaddr" jdbcType="VARCHAR"/>
+        <result property="pic1" column="pic1" jdbcType="VARCHAR"/>
+        <result property="pic2" column="pic2" jdbcType="VARCHAR"/>
+        <result property="facepic" column="facepic" jdbcType="VARCHAR"/>
+        <result property="servnumber" column="servnumber" jdbcType="VARCHAR"/>
+        <result property="ownercontact" column="ownercontact" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="brandid" column="brandid" jdbcType="VARCHAR"/>
+        <result property="linenameen" column="lineNameEn" jdbcType="VARCHAR"/>
+        <result property="channelid" column="channelId" jdbcType="VARCHAR"/>
+        <result property="requestTime" column="request_time" jdbcType="TIMESTAMP"/>
+        <result property="responseTime" column="response_time" jdbcType="TIMESTAMP"/>
+        <result property="auditresult" column="auditresult" jdbcType="INTEGER"/>
+        <result property="auditdesc" column="auditdesc" jdbcType="VARCHAR"/>
+        <result property="auditcomment" column="auditcomment" jdbcType="VARCHAR"/>
+        <result property="step" column="step" jdbcType="INTEGER"/>
+        <result property="retMsg" column="ret_msg" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="addSimVinInfo">
+        replace  into shop_admin.iccid_vin(iccid,phone,vin,order_time)
+        values
+        <foreach collection="iccidVinList" item="item" separator=",">
+            (#{item.iccid},#{item.phone},#{item.vin},#{item.orderTime})
+        </foreach>
+    </insert>
+    
+    <select id="selectIccidVin" resultMap="IccidVinMap">
+        select
+        o.id,
+        o.iccid,
+        o.vin,
+        INSERT(o.phone,4,4,'****')as phone,
+        o.order_time,
+        o.status,
+        p.imsi,p.msisdn,p.imei,p.deviceID,p.username,p.gender,p.ownercerttype,p.ownercertid,p.ownercertaddr,p.pic1,p.pic2,p.facepic,
+        p.servnumber,p.ownercontact,p.email,p.brandid,p.lineNameEn,p.channelId,p.auditresult,p.auditdesc,p.auditcomment,p.ret_msg
+        from iccid_vin o left join personal_authentication p on o.vin=p.vin
+        where 1=1
+        <if test="iccid!=null and iccid!=''">
+            and o.iccid like concat(concat('%',#{iccid},'%'))
+        </if>
+        <if test="vin!=null and vin!=''">
+            and o.vin like concat(concat('%',#{vin},'%'))
+        </if>
+        <if test="status!=null and status!=''">
+            and o.status =#{status}
+        </if>
+    </select>
+
+</mapper>

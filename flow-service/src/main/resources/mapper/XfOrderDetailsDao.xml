@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.XfOrderMapper">
+
+    <resultMap type="com.xinba.flow.entity.XfOrderDetails" id="XfOrderDetailsMap">
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="Id" column="_id" jdbcType="VARCHAR"/>
+        <result property="firmPackId" column="firm_pack_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="amount" column="amount" jdbcType="INTEGER"/>
+        <result property="desc" column="desc_info" jdbcType="VARCHAR"/>
+        <result property="standard" column="standard" jdbcType="INTEGER"/>
+        <result property="time" column="time" jdbcType="TIMESTAMP"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="typeName" column="type_name" jdbcType="VARCHAR"/>
+        <result property="cycle" column="cycle" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="selectOrderDetails" resultMap="XfOrderDetailsMap">
+        select * from shop_admin.xf_order_details
+        where order_id=#{orderId}
+    </select>
+
+</mapper>

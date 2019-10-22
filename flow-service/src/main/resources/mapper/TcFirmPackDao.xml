@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.OperationFlowMapper">
+
+    <resultMap type="com.xinba.flow.entity.TcFirmPack" id="TcFirmPackMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="cost" column="cost" jdbcType="NUMERIC"/>
+        <result property="cycle" column="cycle" jdbcType="INTEGER"/>
+        <result property="strCycle" column="str_cycle" jdbcType="VARCHAR"/>
+        <result property="info" column="info" jdbcType="VARCHAR"/>
+        <result property="standard" column="standard" jdbcType="INTEGER"/>
+        <result property="strStandard" column="str_standard" jdbcType="VARCHAR"/>
+        <result property="firmId" column="firm_id" jdbcType="INTEGER"/>
+        <result property="firmTypeId" column="firm_type_id" jdbcType="INTEGER"/>
+        <result property="typeProductId" column="type_product_id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="tcType" column="tc_type" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="packId" column="pack_id" jdbcType="INTEGER"/>
+        <result property="descInfo" column="desc_info" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--查询所有车厂套餐-->
+    <select id="selectAllFirmPa" resultMap="TcFirmPackMap">
+        select * from shop_admin.tc_firm_pack
+        where status=1
+        <if test="name!=null and name!=''">
+            and name like concat(concat('%',#{name},'%'))
+        </if>
+        <if test="info!=null and info!=''">
+           and info like concat(concat('%',#{info},'%'))
+        </if>
+        <if test="firmId!=null and firmId!=''">
+            and firm_id=#{firmId}
+        </if>
+        <if test="firmTypeId!=null and firmTypeId!=''">
+            and firm_type_id=#{firmTypeId}
+        </if>
+        <if test="typeProductId!=null and typeProductId!=''">
+            and type_product_id=#{typeProductId}
+        </if>
+    </select>
+    <!--添加车厂套餐-->
+    <insert id="insertFirmPack"  useGeneratedKeys="true" keyProperty="id">
+        insert into shop_admin.tc_firm_pack(name, content,cost, cycle,str_cycle, info, standard,str_standard, firm_id,firm_type_id,type_product_id,type,pack_id,desc_info)
+        values (#{name},#{content},#{cost},#{cycle},#{strCycle},#{info},#{standard},#{strStandard},#{firmId},#{firmTypeId},#{typeProductId},#{type},#{packId},#{descInfo})
+    </insert>
+
+    <select id="selectPackByCar" resultMap="TcFirmPackMap">
+        select
+        fp.id,
+        fp.name,
+        fp.content,
+        fp.cost,
+        fp.cycle,
+        fp.str_cycle,
+        fp.info,
+        fp.standard,
+        fp.str_standard,
+        fp.create_time,
+        fp.firm_id,
+        fp.type_product_id,
+        fp.firm_type_id,
+        fp.status,
+        fp.tc_type,
+        fp.type,
+        fp.pack_id
+        fp.desc_info
+        from shop_admin.tc_firm_pack fp ,shop_admin.gc_firm_product gf
+        where fp.type_product_id = gf.id and gf.name = #{carType} and fp.status=1
+
+    </select>
+
+    <update id="deleteFirmPack">
+        update shop_admin.tc_firm_pack
+        set
+        status=0
+        where id=#{id}
+    </update>
+    <select id="getFirmPackByPackId" resultType="INTEGER">
+        select id from shop_admin.tc_firm_pack
+        where pack_id=#{packId}
+    </select>
+    <update id="updateFirmPack">
+        update shop_admin.tc_firm_pack
+        set
+        name=#{name},
+        content=#{content},
+        cost=#{cost},
+        cycle=#{cycle},
+        str_cycle=#{strCycle}
+        where id=#{id}
+
+    </update>
+</mapper>

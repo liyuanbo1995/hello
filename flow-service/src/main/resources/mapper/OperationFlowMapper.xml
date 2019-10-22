@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.OperationFlowMapper">
+
+    <resultMap type="com.xinba.flow.entity.OperationFlow" id="OperationPackageMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="extend" column="extend" jdbcType="NUMERIC"/>
+        <result property="cycle" column="cycle" jdbcType="INTEGER"/>
+        <result property="level" column="level" jdbcType="INTEGER"/>
+        <result property="time" column="time" jdbcType="TIMESTAMP"/>
+        <result property="info" column="ino" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="OperationPackageMap">
+        select
+          id, name, extend, cycle, level, time
+        from shop_admin.tc_base_pack
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询所有运营商套餐-->
+    <select id="selectAll" resultMap="OperationPackageMap" >
+        select * from shop_admin.tc_base_pack
+    </select>
+
+    <!--根据名字查询所有运营商套餐-->
+    <select id="selectOperationPack" resultMap="OperationPackageMap" >
+         select * from shop_admin.tc_base_pack where status=1
+         <if test="code!=null and code!=''">
+             and code like concat(concat('%',#{code},'%'))
+         </if>
+         <if test="name!=null and name!=''">
+             and name like concat(concat('%',#{name},'%'))
+         </if>
+         <if test="type!=null and type!=''">
+             and type=#{type}
+         </if>
+    </select>
+    <!--新增运营商套餐-->
+    <insert id="insertBasePack" >
+        insert into shop_admin.tc_base_pack(name, extend, cycle, level,type,code,standard,info)
+        values (#{name}, #{extend}, #{cycle}, #{level},#{type},#{code},#{standard},#{info})
+    </insert>
+
+    <select id="selectPackById" resultMap="OperationPackageMap">
+        select * from shop_admin.tc_base_pack where id=#{id} and status=1
+    </select>
+
+    <!--删除某个运营商套餐-->
+    <delete id="deleteByCode">
+        delete from shop_admin.tc_base_pack where id = #{id}
+    </delete>
+
+    <!--更改某个运营商套餐状态-->
+    <update id="updateStatus">
+        update shop_admin.tc_base_pack
+        set status=0
+        where id=#{id}
+    </update>
+
+    <select id="getFirmName" resultType="String">
+         select name from shop_admin.gc_firm where id=#{firmId};
+    </select>
+    <select id="getFirmTypeName" resultType="String">
+        select name from shop_admin.gc_firm_product_type where id=#{firmTypeId}
+    </select>
+    <select id="getTypeProductName" resultType="String">
+        select name from shop_admin.gc_firm_product where id=#{typeProductId}
+    </select>
+
+    <select id="countItems" resultType="INTEGER">
+        select count(*) from shop_admin.tc_firm_pack
+        where firm_id=#{firmId} and pack_id=#{packId}
+        <if test="firmTypeId!=null and firmTypeId!=''">
+            and firm_type_id=#{firmTypeId}
+        </if>
+        <if test="typeProductId!=null and typeProductId!='' ">
+            and type_product_id=#{typeProductId}
+        </if>
+    </select>
+
+</mapper>

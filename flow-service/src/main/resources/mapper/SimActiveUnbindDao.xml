@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.SimInfoMapper">
+
+    <resultMap type="com.xinba.flow.entity.SimActiveUnbind" id="SimActiveUnbindMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="operationPeople" column="operation_people" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getSimActiveOrUnbindRecord" resultMap="SimActiveUnbindMap">
+        select
+          id, iccid, create_time, status, operation_people
+        from shop_admin.sim_active_unbind
+        <where>
+            <if test="iccid != null and iccid != ''">
+                and iccid = #{iccid}
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and DATE(create_time) &gt;= DATE_FORMAT(#{beginTime},'%Y-%m-%d')
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and DATE(create_time) &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="operation != null and operation != ''">
+                and operation = #{operation}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addSimActiveRecord">
+        replace into shop_admin.sim_active_unbind(iccid,create_time,status)
+        values
+        <foreach collection="simActiveRecordList" item="item" separator=",">
+            (#{item.iccid},#{item.createTime},#{item.status})
+        </foreach>
+    </insert>
+
+</mapper>

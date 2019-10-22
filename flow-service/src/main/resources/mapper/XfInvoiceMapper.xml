@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.flow.mapper.XfInvoiceMapper">
+
+    <resultMap type="com.xinba.flow.entity.XfInvoice" id="XfInvoiceMap">
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="invoiceStatus" column="invoice_status" jdbcType="VARCHAR"/>
+        <result property="nnum" column="nnum" jdbcType="VARCHAR"/>
+        <result property="payStatus" column="pay_status" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="totalPrice" column="total_price" jdbcType="NUMERIC"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="invoiceTime" column="invoice_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryInvioce" resultMap="XfInvoiceMap">
+        select
+          o.order_id, o.content, o.email, p.invoice_status, o.nnum, p.pay_status, o.phone, o.title, p.amount as total_price, o.type, o.create_time,o.invoice_time
+        from shop_admin.xf_invoice o,shop_admin.xf_order p
+        where o.order_id=p.order_id and p.pay_status='已支付'
+            <if test="orderId!=null and orderId!=''">
+                and o.order_id like concat(concat('%',#{orderId},'%'))
+            </if>
+            <if test="beginTime!=null and beginTime!=''">
+                and DATE(o.create_time) &gt;= DATE_FORMAT(#{beginTime},'%Y-%m-%d')
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and DATE(o.create_time) &lt;= DATE_FORMAT(#{endTime},'%Y-%m-%d')
+            </if>
+            <if test="invoiceStatus!=null and invoiceStatus!=''">
+                and p.invoice_status=#{invoiceStatus}
+            </if>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="addInvoice" keyProperty="" useGeneratedKeys="true">
+        insert into shop_admin.xf_invoice(order_id, content, email, invoice_status, nnum, pay_status, phone, title, total_price, type, create_time)
+        values (#{orderId}, #{content}, #{email}, #{invoiceStatus}, #{nnum}, #{payStatus}, #{phone}, #{title}, #{totalPrice}, #{type}, #{createTime})
+        on duplicate key update
+        order_id = VALUES(order_id),
+        content = VALUES(content),
+        email = VALUES(email),
+        invoice_status = VALUES(invoice_status),
+        nnum = VALUES(nnum),
+        pay_status = VALUES(pay_status),
+        phone = VALUES(phone),
+        title = VALUES(title),
+        total_price = VALUES(total_price),
+        type = VALUES(type),
+        create_time = VALUES(create_time)
+    </insert>
+
+    <update id="changeInvoiceStatus">
+        update xf_order o join xf_invoice p
+        on o.order_id = p.order_id
+        set
+        o.invoice_status = #{status},
+        p.invoice_status=#{status},
+        p.invoice_time=#{invoiceTime}
+        where p.order_id=#{orderId}
+        and o.pay_status='已支付'
+    </update>
+
+</mapper>
