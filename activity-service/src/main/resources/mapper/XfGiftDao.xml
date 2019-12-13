@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.active.mapper.XfGiftMapper">
+
+    <resultMap type="com.xinba.active.entity.order.XfGift" id="XfGiftMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="giftUrl" column="gift_url" jdbcType="VARCHAR"/>
+        <result property="giftName" column="gift_name" jdbcType="VARCHAR"/>
+        <result property="detailsName" column="details_name" jdbcType="VARCHAR"/>
+        <result property="detailsUrl" column="details_url" jdbcType="VARCHAR"/>
+        <result property="detailsPrice" column="details_price" jdbcType="NUMERIC"/>
+        <result property="logisticsStatus" column="logistics_status" jdbcType="VARCHAR"/>
+        <result property="salesId" column="sales_id" jdbcType="VARCHAR"/>
+        <result property="logisticsId" column="logistics_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--新增所有列-->
+    <insert id="insertGift">
+        insert into shop_admin.xf_gift(order_id, gift_url, gift_name, details_name, details_url, details_price, logistics_status, sales_id, logistics_id)
+        values (#{orderId}, #{giftUrl}, #{giftName}, #{detailsName}, #{detailsUrl}, #{detailsPrice}, #{logisticsStatus}, #{salesId}, #{logisticsId})
+    </insert>
+
+
+</mapper>

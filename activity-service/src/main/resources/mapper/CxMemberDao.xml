@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.active.mapper.CxMemberMapper">
+
+    <resultMap type="com.xinba.active.entity.CxMember" id="CxMemberMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="vin" column="vin" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="area" column="area" jdbcType="VARCHAR"/>
+        <result property="details" column="details" jdbcType="VARCHAR"/>
+        <result property="activityQualification" column="activity_qualification" jdbcType="VARCHAR"/>
+        <result property="activityTimes" column="activity_times" jdbcType="INTEGER"/>
+        <result property="activityId" column="activity_id" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+   <select id="viewMemberRecord" resultMap="CxMemberMap">
+       select activity_qualification,activity_times from cx_member
+       <where>
+           <if test="iccid!=null and iccid!=''">
+               and iccid=#{iccid}
+           </if>
+           <if test="vin!=null and vin!=''">
+               and vin=#{vin}
+           </if>
+           <if test="activityId!=null and activityId!=''">
+               and activity_id=#{activityId}
+           </if>
+       </where>
+   </select>
+
+    <!--活动参与人数统计-->
+    <select id="countMember" resultType="java.lang.Integer">
+        select count(id) from shop_admin.cx_member
+        where activity_id = #{activityId}
+    </select>
+
+    <!--活动参与 人数，多活动一起查出来-->
+    <select id="countMultiMember" resultType="com.xinba.active.dto.CommonDTO">
+        select activity_id as keyDTO, count(id) as valueDTO, activity_id as tag from shop_admin.cx_member group by tag
+    </select>
+
+    <insert id="insertMemberRecord">
+        insert into cx_member(iccid, vin,phone,activity_qualification, activity_times,create_time,activity_id)
+        values (#{iccid},#{vin},#{phone},#{activityQualification},#{activityTimes},#{createTime},#{activityId})
+    </insert>
+
+    <update id="updateSubMemberTimes">
+        update cx_member
+        set activity_times=activity_times-1
+        <where>
+            <if test="iccid!=null and iccid!=''">
+                and iccid=#{iccid}
+            </if>
+            <if test="vin!=null and vin!=''">
+                and vin=#{vin}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateAddMemberTimes">
+        update cx_member
+        set activity_times=activity_times+1
+       <where>
+           <if test="iccid!=null and iccid!=''">
+               and iccid=#{iccid}
+           </if>
+           <if test="vin!=null and vin!=''">
+               and vin=#{vin}
+           </if>
+       </where>
+    </update>
+
+    <update id="updateMemberRecord">
+        update cx_member
+        <set>
+            <if test="phone!=null and phone!=''">
+                phone=#{phone},
+            </if>
+            <if test="subTimes==true">
+                activity_times=activity_times-1,
+            </if>
+            <if test="addTimes==true">
+                activity_times=activity_times+1
+            </if>
+        </set>
+       <where>
+           <if test="iccid!=null and iccid!=''">
+               and iccid=#{iccid}
+           </if>
+           <if test="vin!=null and vin!=''">
+               and vin=#{vin}
+           </if>
+       </where>
+    </update>
+
+    <update id="addAdress">
+        update cx_member
+        <set>
+            <if test="name!=null and name!=''">
+               name=#{name},
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone=#{phone},
+            </if>
+            <if test="province!=null and province!=''">
+                province=#{province},
+            </if>
+            <if test="city!=null and city!=''">
+                city=#{city},
+            </if>
+            <if test="area!=null and area!=''">
+                area=#{area},
+            </if>
+            <if test="details!=null and details!=''">
+                details=#{details}
+            </if>
+        </set>
+        <where>
+            <if test="iccid!=null and iccid!=''">
+                and iccid=#{iccid}
+            </if>
+            <if test="vin!=null and vin!=''">
+                and vin=#{vin}
+            </if>
+            <if test="activityId!=null and activityId!=''">
+                and activity_id=#{activityId}
+            </if>
+        </where>
+    </update>
+
+    <select id="selectCxMemberInfo" resultMap="CxMemberMap">
+        select  name, phone, province, city, area, details
+        from cx_member
+        <where>
+            <if test="iccid!=null and iccid!=''">
+                and iccid=#{iccid}
+            </if>
+            <if test="vin!=null and vin!=''">
+                and vin=#{vin}
+            </if>
+        </where>
+    </select>
+
+</mapper>

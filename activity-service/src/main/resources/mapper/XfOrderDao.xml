@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.active.mapper.XfOrderMapper">
+    <resultMap type="com.xinba.active.entity.order.XfOrder" id="XfOrderMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="amount" column="amount" jdbcType="NUMERIC"/>
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="orderStatus" column="order_status" jdbcType="VARCHAR"/>
+        <result property="payMethod" column="pay_method" jdbcType="VARCHAR"/>
+        <result property="payStatus" column="pay_status" jdbcType="VARCHAR"/>
+        <result property="vinCode" column="vin_code" jdbcType="VARCHAR"/>
+        <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
+        <collection property="products" resultMap="ProductsMap"/>
+        <collection property="giftList" resultMap="GiftMap"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.active.entity.order.XfOrderDetails" id="ProductsMap">
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="desc" column="desc_info" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="typeName" column="type_name" jdbcType="VARCHAR"/>
+        <result property="cycle" column="cycle" jdbcType="VARCHAR"/>
+        <result property="categoryName" column="category_name" jdbcType="VARCHAR"/>
+        <result property="off" column="off" jdbcType="NUMERIC"/>
+        <result property="superValue" column="super_value" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.active.entity.order.XfGift" id="GiftMap">
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <result property="giftUrl" column="gift_url" jdbcType="VARCHAR"/>
+        <result property="giftName" column="gift_name" jdbcType="VARCHAR"/>
+        <result property="detailsName" column="details_name" jdbcType="VARCHAR"/>
+        <result property="detailsUrl" column="details_url" jdbcType="VARCHAR"/>
+        <result property="detailsPrice" column="details_price" jdbcType="NUMERIC"/>
+        <result property="salesId" column="sales_id" jdbcType="VARCHAR"/>
+        <result property="logisticsId" column="logistics_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectMyOrder" resultMap="XfOrderMap">
+        select
+        o.amount,
+        o.count,
+        o.car_name,
+        o.order_id,
+        o.order_status,
+        o.pay_method,
+        o.pay_status,
+        o.invoice_status,
+        o.vin_code,
+        o.pay_time,
+        d.name,
+        d.price,
+        d.desc_info,
+        d.type_name,
+        d.cycle,
+        d.category_name,
+        d.off,
+        d.super_value,
+        p.gift_name,
+        p.details_price,
+        p.sales_id,
+        p.gift_url,
+        p.logistics_id
+        from xf_order o left join xf_order_details d on o.order_id=d.order_id left join xf_gift p on d.order_id=p.order_id
+        <where>
+            <if test="iccid!=null and iccid!=''">
+                and o.user_iccid =#{iccid}
+            </if>
+            <if test="payStatus!=null and payStatus!=''">
+                and o.pay_status =#{payStatus}
+            </if>
+            <if test="orderStatus!=null and orderStatus!=''">
+                and o.order_status=#{orderStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSingleOrder" resultMap="XfOrderMap">
+        select order_id,amount,order_status,pay_status,pay_method,vin_code,pay_time from xf_order
+        <where>
+            <if test="orderId!=null and orderId!=''">
+                and order_id =#{orderId}
+            </if>
+            <if test="iccid!=null and iccid!=''">
+                and user_iccid =#{iccid}
+            </if>
+        </where>
+    </select>
+</mapper>

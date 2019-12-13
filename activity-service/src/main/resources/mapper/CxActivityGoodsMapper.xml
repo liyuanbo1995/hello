@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.active.mapper.CxActivityGoodsMapper">
+
+    <resultMap type="com.xinba.active.entity.CxActivityGoods" id="CxActivityGoodsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="activityId" column="activity_id" jdbcType="VARCHAR"/>
+        <result property="activityType" column="activity_type" jdbcType="VARCHAR"/>
+        <result property="goodsId" column="goods_id" jdbcType="VARCHAR"/>
+        <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+        <result property="goodsType" column="goods_type" jdbcType="INTEGER"/>
+        <result property="goodsTotal" column="goods_total" jdbcType="VARCHAR"/>
+        <result property="goodsRemain" column="goods_remain" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="goodsImg" column="goods_img" jdbcType="VARCHAR"/>
+        <result property="goodsWeight" column="goods_weight" jdbcType="INTEGER"/>
+        <result property="isInPool" column="isInPool" jdbcType="INTEGER"/>
+        <result property="goodsDetail" column="goods_detail" jdbcType="VARCHAR"/>
+        <result property="goodsInfo" column="goods_info" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--删除活动商品-->
+    <delete id="deleteActivityGoods">
+        delete from shop_admin.cx_activity_goods where goods_id = #{goodsId}
+    </delete>
+
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectActivityGoods" resultMap="CxActivityGoodsMap">
+        select
+          id,activity_id, activity_type, goods_id, goods_name, goods_type, goods_total, goods_remain, status, create_time, goods_img, goods_weight,isInPool,goods_detail,goods_info
+        from shop_admin.cx_activity_goods where 1=1
+            <if test="activityId != null and activityId != ''">
+                and activity_id = #{activityId}
+            </if>
+            <if test="goodsId != null and goodsId != ''">
+                and goods_id = #{goodsId}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                and goods_name like concat(concat(#{goodsName},'%'))
+            </if>
+            <if test="goodsType != null and goodsType != ''">
+                and goods_type = #{goodsType}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createTime != null and createTime != ''">
+                and create_time = #{createTime}
+            </if>
+            <if test="isInPool != null">
+                and isInPool = #{isInPool}
+            </if>
+    </select>
+
+    <select id="selectAcGoods" resultMap="CxActivityGoodsMap">
+        select
+        activity_id, goods_id, goods_name, status, goods_img,goods_detail,goods_info
+        from shop_admin.cx_activity_goods where 1=1
+        <if test="activityId != null and activityId != ''">
+            and activity_id = #{activityId}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="isInPool != null">
+            and isInPool = #{isInPool}
+        </if>
+        <if test="count != null">
+            limit ${count}
+        </if>
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insertActivityGoods" parameterType="com.xinba.active.entity.CxActivity">
+        insert into shop_admin.cx_activity_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityId != null and activityId != ''">
+                activity_id,
+            </if>
+            <if test="activityType != null and activityType != ''">
+                activity_type,
+            </if>
+            <if test="goodsId != null and goodsId != ''">
+                goods_id,
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                goods_name,
+            </if>
+            <if test="goodsType != null">
+                goods_type,
+            </if>
+            <if test="goodsTotal != null">
+                goods_total,
+            </if>
+            <if test="goodsRemain != null">
+                goods_remain,
+            </if>
+            <if test="goodsImg != null and goodsImg != ''">
+                goods_img,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="goodsWeight != null">
+                goods_weight,
+            </if>
+            <if test="isInPool != null">
+                isInPool,
+            </if>
+            <if test="goodsDetail != null and goodsDetail != ''">
+                goods_detail,
+            </if>
+            <if test="goodsInfo != null and goodsInfo != ''">
+                goods_info,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityId != null and activityId != ''">
+                #{activityId},
+            </if>
+            <if test="activityType != null and activityType != ''">
+                #{activityType},
+            </if>
+            <if test="goodsId != null and goodsId != ''">
+                #{goodsId},
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                #{goodsName},
+            </if>
+            <if test="goodsType != null">
+                #{goodsType},
+            </if>
+            <if test="goodsTotal != null">
+                #{goodsTotal},
+            </if>
+            <if test="goodsRemain != null">
+                #{goodsRemain},
+            </if>
+            <if test="goodsImg != null and goodsImg != ''">
+                #{goodsImg},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="goodsWeight != null">
+                #{goodsWeight},
+            </if>
+            <if test="isInPool != null">
+                #{isInPool},
+            </if>
+            <if test="goodsDetail != null and goodsDetail != ''">
+                #{goodsDetail},
+            </if>
+            <if test="goodsInfo != null and goodsInfo != ''">
+                #{goodsInfo},
+            </if>
+            <if test="price != null">
+                #{price},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSubGoodsAmount">
+        update shop_admin.cx_activity_goods
+        set goods_remain=goods_remain-1
+        where goods_id=#{goodsId} and goods_remain>0
+    </update>
+
+    <select id="getGoodsInfo" resultMap="CxActivityGoodsMap">
+        select activity_id,activity_type,goods_id,goods_name,goods_type,goods_img,goods_detail,goods_info,price,end_time
+        from cx_activity_goods
+        <where>
+            <if test="goodsId!=null and goodsId!=''">
+                and goods_id=#{goodsId}
+            </if>
+            <if test="goodsName!=null and goodsName!=''">
+                and goods_name=#{goodsName}
+            </if>
+        </where>
+    </select>
+
+    <!--通过goodsId 查询商品信息-->
+    <select id="getActivityGoodsByGoodsId" resultType="com.xinba.active.entity.CxActivityGoods">
+        select activity_id, activity_type, goods_id, goods_name, goods_type, goods_total, goods_remain, status, create_time,
+        goods_img, goods_weight, isInPool, goods_detail, goods_info
+        from cx_activity_goods
+        where goods_id = #{goodsId}
+    </select>
+
+    <!--通过activityId 查询活动商品列表-->
+    <select id="listActivityGoodsByActivityId" resultType="com.xinba.active.entity.CxActivityGoods">
+        select activity_id, activity_type, goods_id, goods_name, goods_type, goods_total, goods_remain, status, create_time,
+        goods_img, goods_weight, isInPool, goods_detail, goods_info
+        from cx_activity_goods
+        where activity_id = #{activityId}
+    </select>
+
+    <!--通过活动id和上下架状态 统计奖项数-->
+    <select id="countActivityGoodsByStatus" resultType="java.lang.Integer">
+        select count(id) from shop_admin.cx_activity_goods
+        where activity_id = #{activityId} and status = #{status}
+    </select>
+
+    <!--统计奖项数 避免重复调用数据库-->
+    <select id="countMultiActivityGoodsByStatus" resultType="com.xinba.active.dto.CommonDTO">
+        select activity_id as keyDTO, count(id) as valueDTO, activity_id as tag from shop_admin.cx_activity_goods
+        group by tag
+    </select>
+
+    <update id="updateAddGoodsAmount">
+        update shop_admin.cx_winning_record o,shop_admin.cx_activity_goods p
+        set p.goods_remain=p.goods_remain+1
+        where o.goods_id=p.goodsId and p.goods_type='实物' and round((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(o.create_time))/60) >15
+    </update>
+
+    <!--修改商品 权重和抽奖概率-->
+    <update id="updateActivityGoodsWeight">
+        update shop_admin.cx_activity_goods
+        <set>
+            <if test="goodsWeight != null">
+                goods_weight = #{goodsWeight},
+            </if>
+        </set>
+        <where>
+            <if test="goodsId != null and goodsId != ''">
+                and goods_id = #{goodsId}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                and goods_name like CONCAT(#{goodsName},'%')
+            </if>
+        </where>
+    </update>
+
+    <!--修改商品 是否在奖池里面-->
+    <update id="updateActivityGoodsInPool">
+        update shop_admin.cx_activity_goods
+        <set>
+            <if test="isInPool != null">
+                isInPool = #{isInPool},
+            </if>
+        </set>
+        <where>
+            <if test="goodsId != null and goodsId != ''">
+                and goods_id = #{goodsId}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                and goods_name = #{goodsName}
+            </if>
+        </where>
+    </update>
+
+    <!--修改商品 信息，设置可以更新的部分-->
+    <update id="updateActivityGoods">
+        update shop_admin.cx_activity_goods
+        <set>
+            <if test="cxActivityGoods.goodsName != null and cxActivityGoods.goodsName != ''">
+                goods_name = #{cxActivityGoods.goodsName},
+            </if>
+            <if test="cxActivityGoods.goodsTye != null and cxActivityGoods.goodsTye != ''">
+                goods_type = #{cxActivityGoods.goodsType},
+            </if>
+            <if test="cxActivityGoods.goodsImg != null and cxActivityGoods.goodsImg != ''">
+                goods_img = #{cxActivityGoods.goodsImg},
+            </if>
+            <if test="cxActivityGoods.goodsDetail != null and cxActivityGoods.goodsDetail != ''">
+                goods_detail = #{cxActivityGoods.goodsDetail},
+            </if>
+            <if test="cxActivityGoods.goodsInfo != null and cxActivityGoods.goodsInfo != ''">
+                goods_info = #{cxActivityGoods.goodsInfo},
+            </if>
+            <if test="cxActivityGoods.status != null">
+                status = #{cxActivityGoods.status},
+            </if>
+            <if test="cxActivityGoods.price != null">
+                price = #{cxActivityGoods.price},
+            </if>
+            <if test="cxActivityGoods.endTime != null">
+                end_time = #{cxActivityGoods.endTime},
+            </if>
+        </set>
+        <where>
+            <if test="cxActivityGoods.goodsId != null and cxActivityGoods.goodsId != ''">
+                and goods_id = #{cxActivityGoods.goodsId}
+            </if>
+        </where>
+    </update>
+
+
+</mapper>

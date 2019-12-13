@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xinba.active.mapper.CxWinningRecordMapper">
+
+    <resultMap type="com.xinba.active.entity.CxWinningRecord" id="CxWinningRecordMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="activityId" column="activity_id" jdbcType="VARCHAR"/>
+        <result property="goodsId" column="goods_id" jdbcType="VARCHAR"/>
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="vin" column="vin" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="payStatus" column="pay_status" jdbcType="VARCHAR"/>
+        <result property="exchangeCode" column="exchange_code" jdbcType="VARCHAR"/>
+        <result property="isFirstUser" column="is_first_user" jdbcType="VARCHAR"/>
+        <result property="orderTime" column="order_time" jdbcType="TIMESTAMP"/>
+        <result property="redeemedId" column="redeemed_id" jdbcType="INTEGER"/>
+        <result property="orderId" column="order_id" jdbcType="VARCHAR"/>
+        <collection property="memberInfo" resultMap="MemberMap"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.active.entity.CxMember" id="MemberMap">
+        <result property="iccid" column="iccid" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="area" column="area" jdbcType="VARCHAR"/>
+        <result property="details" column="details" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.xinba.active.entity.CxWinningRecord" id="GoodsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="exchangeCode" column="exchange_code" jdbcType="VARCHAR"/>
+        <result property="redeemedId" column="redeemed_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="goodsId" column="goods_id" jdbcType="VARCHAR"/>
+        <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+        <result property="goodsType" column="goods_type" jdbcType="INTEGER"/>
+        <result property="goodsImg" column="goods_img" jdbcType="VARCHAR"/>
+        <result property="goodsDetail" column="goods_detail" jdbcType="VARCHAR"/>
+        <result property="goodsInfo" column="goods_info" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectWiningRecord" resultMap="CxWinningRecordMap">
+        select
+        activity_id, goods_id, iccid, vin,create_time, status, pay_status,exchange_code,is_first_user,order_time,redeemed_id,order_id
+        from shop_admin.cx_winning_record
+        <where>
+            <if test="activityId != null and activityId != ''">
+                and activity_id = #{activityId}
+            </if>
+            <if test="iccid != null and iccid != ''">
+                and iccid = #{iccid}
+            </if>
+            <if test="vin != null and vin != ''">
+                and vin = #{vin}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="exchangeCode != null and exchangeCode != ''">
+                and exchange_code = #{exchangeCode}
+            </if>
+            <if test="payStatus != null and payStatus != ''">
+                and pay_status = #{payStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSingleWiningRecord" resultMap="CxWinningRecordMap">
+        select
+        activity_id, goods_id, create_time, status,exchange_code,is_first_user,order_time,redeemed_id
+        from shop_admin.cx_winning_record
+        <where>
+            <if test="activityId != null and activityId != ''">
+                and activity_id = #{activityId}
+            </if>
+            <if test="iccid != null and iccid != ''">
+                and iccid = #{iccid}
+            </if>
+            <if test="vin != null and vin != ''">
+                and vin = #{vin}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="exchangeCode != null and exchangeCode != ''">
+                and exchange_code = #{exchangeCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectWinningRecordByOrderId" resultMap="CxWinningRecordMap">
+        select
+        activity_id, goods_id, create_time, status,exchange_code,is_first_user,order_time,redeemed_id,order_id
+        from shop_admin.cx_winning_record
+        <where>
+            <if test="iccid != null and iccid != ''">
+                and iccid = #{iccid}
+            </if>
+            <if test="vin != null and vin != ''">
+                and vin = #{vin}
+            </if>
+            <if test="orderId != null and orderId != ''">
+                and order_id = #{orderId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectWiningRecordAndGoodsInfo" resultMap="GoodsMap">
+        select
+        o.id,o.goods_id, o.exchange_code,o.redeemed_id,o.status,
+        p.goods_name,p.goods_type,p.goods_img,p.goods_detail,p.goods_info,p.price,p.end_time
+        from shop_admin.cx_winning_record o left join cx_activity_goods p on o.goods_id=p.goods_id
+        <where>
+            <if test="activityId != null and activityId != ''">
+                and o.activity_id = #{activityId}
+            </if>
+            <if test="iccid != null and iccid != ''">
+                and o.iccid = #{iccid}
+            </if>
+            <if test="vin != null and vin != ''">
+                and o.vin = #{vin}
+            </if>
+            <if test="status != null and status != ''">
+                and o.status = #{status}
+            </if>
+            <if test="exchangeCode != null and exchangeCode != ''">
+                and o.exchange_code = #{exchangeCode}
+            </if>
+            <if test="payStatus != null and payStatus != ''">
+                and o.pay_status = #{payStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectScrollWinningRecord" resultType="com.xinba.active.entity.CxWinningRecord">
+        SELECT p.goods_name as goodsName,INSERT ( i.phone, 4, 4, '****' ) AS phone
+        FROM
+        cx_winning_record o LEFT JOIN cx_activity_goods p ON o.goods_id = p.goods_id LEFT JOIN cx_member i ON o.iccid = i.iccid
+        ORDER BY o.create_time DESC
+        limit 10
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insertWinningRecord">
+        insert into shop_admin.cx_winning_record(activity_id, goods_id, iccid, vin, create_time, status,pay_status,exchange_code,is_first_user,redeemed_id)
+        values (#{activityId}, #{goodsId}, #{iccid}, #{vin}, #{createTime}, #{status},#{payStatus},#{exchangeCode},#{isFirstUser},#{redeemedId})
+    </insert>
+
+    <update id="updateExpireWinningRecord">
+        update shop_admin.cx_winning_record o,shop_admin.cx_activity_goods p
+        set o.status='已过期'
+        where o.goods_id=p.goods_id  and NOW()>p.end_time
+    </update>
+
+    <update id="cancleOrder">
+        update shop_admin.cx_winning_record
+        <set>
+            status='未使用',
+            pay_status='已取消'
+        </set>
+        where status='已使用' and pay_status='待支付' and order_time is not null
+        <if test="dateTime !=null">
+            and  round((UNIX_TIMESTAMP(#{dateTime})-UNIX_TIMESTAMP(order_time))/60) >15
+        </if>
+    </update>
+
+    <select id="getExchangeCode" resultType="INTEGER">
+        select count(*) from cx_winning_record where exchange_code=#{exchangeCode}
+    </select>
+
+    <select id="getWinningRecordByCode" resultMap="CxWinningRecordMap">
+        select id,activity_id,goods_id,iccid,vin,create_time,status,pay_status,is_first_user from cx_winning_record
+        where exchange_code=#{exchangeCode} and status='未使用' and is_first_user='true' and activity_id=#{activityId}
+    </select>
+
+    <update id="updateWinningRecord">
+        update shop_admin.cx_winning_record
+        <set>
+            <if test="status!=null and status!=''">
+                status=#{status},
+            </if>
+            <if test="payStatus!=null and payStatus!=''">
+                pay_status=#{payStatus},
+            </if>
+            <if test="orderTime!=null">
+                order_time=#{orderTime},
+            </if>
+            <if test="orderId!=null and orderId!=''">
+                order_id=#{orderId}
+            </if>
+        </set>
+        <where>
+            <if test="iccid!=null and iccid!=''">
+                and iccid=#{iccid}
+            </if>
+            <if test="vin!=null and vin!=''">
+                and vin=#{vin}
+            </if>
+            <if test="exchangeCode!=null and exchangeCode!=''">
+                and exchange_code=#{exchangeCode}
+            </if>
+            <if test="redeemedId!=null">
+                and redeemed_id=#{redeemedId}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateWinningRecordByOrderId">
+        update shop_admin.cx_winning_record
+        <set>
+            <if test="status!=null and status!=''">
+                status=#{status},
+            </if>
+            <if test="payStatus!=null and payStatus!=''">
+                pay_status=#{payStatus},
+            </if>
+            <if test="orderTime!=null">
+                order_time=#{orderTime}
+            </if>
+        </set>
+        <where>
+            <if test="iccid!=null and iccid!=''">
+                and iccid=#{iccid}
+            </if>
+            <if test="vin!=null and vin!=''">
+                and vin=#{vin}
+            </if>
+            <if test="orderId!=null and orderId!=''">
+                and order_id=#{orderId}
+            </if>
+        </where>
+    </update>
+
+    <select id="selectWinningRecordByGoodsType" resultMap="CxWinningRecordMap">
+select
+o.goods_id,
+o.create_time,
+o.status,
+o.exchange_code,
+o.is_first_user,
+o.order_time
+ from cx_winning_record o left join cx_activity_goods p on o.goods_id=p.goods_id
+<where>
+    <if test="activityId!=null and activityId!=''">
+        and o.activity_id=#{activityId}
+    </if>
+    <if test="iccid!=null and iccid!=''">
+        and o.iccid=#{iccid}
+    </if>
+    <if test="vin!=null and vin!=''">
+        and o.vin=#{vin}
+    </if>
+    <if test="goodsType!=null">
+        and p.goods_type=#{goodsType}
+    </if>
+</where>
+    </select>
+
+    <select id="selectRecordById" resultMap="CxWinningRecordMap">
+        select * from cx_winning_record where id=#{id}
+    </select>
+    
+    <select id="getWinnerList" resultMap="CxWinningRecordMap">
+        select INSERT(p.phone,4,4,'****')as phone, name,
+        from cx_winning_record o left join cx_member p on o.iccid=p.iccid
+    </select>
+
+    <!--联合查询，获得奖券信息, 二合一-->
+    <select id="listWinningRecord2One" resultType="com.xinba.active.dto.CxWinningRecordDTO">
+        select * from
+(SELECT id,activity_id, goods_id, iccid as firstIccid ,exchange_code, status as firstStatus, order_id as firstOrderId FROM `cx_winning_record`) as a
+left join (select redeemed_id,iccid as userIccid , status as userStatus,order_id as userOrderId , is_first_user from `cx_winning_record`) as b on b.redeemed_id = a.id
+LEFT JOIN (select goods_id,goods_name,goods_img from `cx_activity_goods`) as c on a.goods_id = c.goods_id
+LEFT JOIN (select iccid,phone as firstPhone , `name` as firstName from `cx_member`) as d on d.iccid = a.firstIccid
+LEFT JOIN (select iccid,phone as userPhone , `name` as userName from `cx_member`) as e on e.iccid = b.userIccid
+        <where>
+            <if test="activityId != null and activityId != ''">
+                and a.activity_id = #{activityId}
+            </if>
+            <if test="iccid != null and iccid != ''">
+                and a.firstIccid = #{iccid}
+            </if>
+            <if test="iccid != null and iccid != ''">
+                and a.firstIccid = #{iccid}
+            </if>
+            <if test="exchangeCode != null and exchangeCode != ''">
+                and a.exchange_code = #{exchangeCode}
+            </if>
+            <if test="userPhone != null and userPhone != ''">
+                and e.userPhone = #{userPhone}
+            </if>
+            <if test="firstPhone != null and firstPhone != ''">
+                and e.firstPhone = #{firstPhone}
+            </if>
+        </where>
+    </select>
+
+    <!--// 订单地址，订单详情，订单状态（未发货，已发货）, 通过订单号-->
+    <!--// 订单是多，中奖记录是少，通过in查询-->
+    <select id="listWinningRecordOrderDetails" resultType="com.xinba.active.dto.CxRecordOrderDTO">
+        SELECT * FROM 
+(select pay_status,order_id,province,city,area,details as addressDetails from `xf_order`) as a
+LEFT JOIN (select order_id,`name` as orderDetails from `xf_order_details`) as b on a.order_id = b.order_id
+LEFT JOIN (select DISTINCT order_id,sales_id,logistics_id, gift_name from `xf_gift`) as c on a.order_id = c.order_id
+        where a.pay_status = '已支付' and a.order_id in
+        <foreach collection="orderIdList" item="orderId" index="index"
+                 open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+    </select>
+
+    <!--循环 单条查询 数据库-->
+    <select id="getWinningRecordOrderDetails" resultType="com.xinba.active.dto.CxRecordOrderDTO">
+        SELECT * FROM
+(select pay_status,order_id,province,city,area,details as addressDetails from `xf_order`) as a
+LEFT JOIN (select order_id,`name` as orderDetails from `xf_order_details`) as b on a.order_id = b.order_id
+LEFT JOIN (select DISTINCT order_id,sales_id,logistics_id, gift_name from `xf_gift`) as c on a.order_id = c.order_id
+        where a.pay_status = '已支付' and a.order_id = #{orderId}
+    </select>
+
+</mapper>

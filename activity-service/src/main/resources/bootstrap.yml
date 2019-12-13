@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active: rd
+    
+
+#dev测试环境
